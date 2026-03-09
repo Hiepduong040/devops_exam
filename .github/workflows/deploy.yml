@@ -1,0 +1,27 @@
+name: CI-CD Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SSH Deploy to Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 47.130.3.144
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/app/devops_exam
+            git pull
+            cd ~/app
+            docker-compose down
+            docker-compose build
+            docker-compose up -d
